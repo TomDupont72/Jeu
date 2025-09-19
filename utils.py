@@ -2,7 +2,7 @@ from typing import List, Dict, Callable, Tuple
 import regex
 from collections import deque
 import json
-from constants import COLORS, DIRECTIONS, ITEMS, THEN, NEGATION, VICTORY, PLAYER
+from constants import COLORS, DIRECTIONS, ITEMS, THEN, NEGATION, VICTORY, PLAYER, PATH
 import time 
 
 def add_to_result(tokens: List[str], result: Dict[str, List[Dict]], type: str, name: str, container: Dict, context: str):
@@ -273,7 +273,7 @@ def save_level(level, rules: List[str], solution: List[str], filename: str):
         "emoji_rules": rules,
         "solution": solution
     }
-    with open(f"C:\\Users\\FlowUP\\Desktop\\Jeu\\Levels\\{filename}", "w", encoding="utf-8") as f:
+    with open(PATH / "Levels" / filename, "w", encoding="utf-8") as f:
         json.dump(data, f, indent=2, ensure_ascii=False)
 
 def compile_rules(emoji_rules: List[str]):
@@ -282,6 +282,8 @@ def compile_rules(emoji_rules: List[str]):
         tokens = tokenize(rule)
         parsed = parse_recursive(tokens)
         parsed_rules.append(parsed)
+    
+    print(parsed_rules)
 
     rules = [compile_rule(rule) for rule in parsed_rules if not rule["win"] and rule["then"]["type"] != "player_condition"]
     action_rules = [compile_rule(rule) for rule in parsed_rules if not rule["win"] and rule["then"]["type"] == "player_condition"]
