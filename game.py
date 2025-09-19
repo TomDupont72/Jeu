@@ -2,6 +2,7 @@ from typing import List, Tuple, Callable
 from utils import move_player_if_allowed, print_level
 import json
 from utils import compile_rules
+from constants import PATH
 
 class Level:
     def __init__(self, grid: List[List[str]], start: Tuple[int]):
@@ -65,11 +66,13 @@ def interactive_game_loop(level: Level, rules: List[Callable[[str, str], bool]],
 
 # Fonction pour lire un niveau depuis un fichier .json
 def load_level(filename: str) -> Tuple:
-    with open(f"C:\\Users\\FlowUP\\Desktop\\Jeu\\Levels\\{filename}", "r", encoding="utf-8") as f:
+    with open(PATH / "Levels" / filename, "r", encoding="utf-8") as f:
         data = json.load(f)
     grid = data["grid"]
     start = tuple(data["start"])
     emoji_rules = data["emoji_rules"]
+
+    print(emoji_rules)
 
     rules, action_rules, victory_rules = compile_rules(emoji_rules)
 
