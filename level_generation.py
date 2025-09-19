@@ -66,12 +66,16 @@ def generate_random_rules(n: int) -> List[str]:
 
     return rule_set
 
-def generate_random_grid(width: int, height: int, tiles: List[str]) -> List[List[str]]:
-    return [[random.choice(tiles) for _ in range(width)] for _ in range(height)]
+def generate_random_grid(tiles: List[str], grid: List[List[str]]) -> List[List[str]]:
+    for i in range(len(grid)):
+        for j in range(len(grid[0])):
+            if grid[i][j] == "":
+                grid[i][j] = random.choice(tiles)
+    return grid
 
-def generate_valid_level(width: int, height: int, tiles: List[str], rules: List[str], action_rules: List[str], victory_rules: List[str], max_attempts: int = 10) -> Tuple[Level, List[str]]:
+def generate_valid_level(tiles: List[str], rules: List[str], action_rules: List[str], victory_rules: List[str], grid: List[List[str]], max_attempts: int = 10) -> Tuple[Level, List[str]]:
     for _ in range(max_attempts):
-        grid = generate_random_grid(width, height, tiles)
+        grid = generate_random_grid(tiles, grid)
         start = (0, 0)
         level = Level(grid, start)
         path = solve_level(level, rules, action_rules, victory_rules, start)
@@ -81,14 +85,14 @@ def generate_valid_level(width: int, height: int, tiles: List[str], rules: List[
 
     raise ValueError("Impossible de générer un niveau faisable avec ces règles.")
 
-def generate_level(width: int, height: int, num_rules: int, min_length_solution: int) -> Tuple[Level, List[str]]:
+def generate_level(num_rules: int, min_length_solution: int, grid: List[List[str]]) -> Tuple[Level, List[str]]:
     while True:
         try:
             emoji_rules = generate_random_rules(num_rules)
             
             rules, action_rules, victory_rules = compile_rules(emoji_rules)
 
-            level, solution = generate_valid_level(width, height, list(COLORS.keys()), rules, action_rules, victory_rules)
+            level, solution = generate_valid_level(list(COLORS.keys()), rules, action_rules, victory_rules, grid)
             if len(solution) >= min_length_solution and len(set(solution)) >= 3:
                 return level, solution, emoji_rules
         except ValueError as e:
